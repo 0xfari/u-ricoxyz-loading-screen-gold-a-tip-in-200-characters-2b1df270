@@ -8,8 +8,13 @@ import * as path from "node:path";
 const TIP =
   "Tip: your AI agent is loading too. It just confidently rewrote your code, and now neither of you knows what it does.";
 
-const OUTPUT_PATH = "/output/entry.txt";
+const FALLBACK_OUTPUT_DIR = "/output";
 const MAX_TIP_CHARS = 200;
+
+function outputDir(): string {
+  const dir = process.env.MAKEFUN_OUTPUT_DIR;
+  return dir && dir.length > 0 ? dir : FALLBACK_OUTPUT_DIR;
+}
 
 function checkTip(text: string): void {
   if (text.length < 1 || text.length > MAX_TIP_CHARS) {
@@ -28,8 +33,9 @@ function ensureOutputDir(filePath: string): void {
 }
 
 function writeTip(text: string): void {
-  ensureOutputDir(OUTPUT_PATH);
-  fs.writeFileSync(OUTPUT_PATH, text, "utf8");
+  const outputPath = path.join(outputDir(), "entry.txt");
+  ensureOutputDir(outputPath);
+  fs.writeFileSync(outputPath, text, "utf8");
 }
 
 function run(): void {
